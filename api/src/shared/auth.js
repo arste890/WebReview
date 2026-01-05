@@ -53,32 +53,23 @@ function verifyToken(token) {
 
 /**
  * Extract token from request headers
+ * Uses X-Auth-Token header to avoid Azure Static Web Apps intercepting Authorization header
  */
 function extractToken(request) {
-    // Azure Functions v4 uses request.headers which may be a Headers object or Map-like
-    let authHeader = null;
+    let authToken = null;
     
     if (request.headers) {
-        // Try different methods to get the header
+        // Try different methods to get the X-Auth-Token header
         if (typeof request.headers.get === 'function') {
-            authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
-        } else if (request.headers.authorization) {
-            authHeader = request.headers.authorization;
-        } else if (request.headers['authorization']) {
-            authHeader = request.headers['authorization'];
+            authToken = request.headers.get('x-auth-token') || request.headers.get('X-Auth-Token');
+        } else if (request.headers['x-auth-token']) {
+            authToken = request.headers['x-auth-token'];
+        } else if (request.headers['X-Auth-Token']) {
+            authToken = request.headers['X-Auth-Token'];
         }
     }
     
-    if (!authHeader) {
-        return null;
-    }
-    
-    // Support both "Bearer token" and just "token"
-    if (authHeader.startsWith('Bearer ')) {
-        return authHeader.substring(7);
-    }
-    
-    return authHeader;
+    return authToken || null;
 }
 
 /**

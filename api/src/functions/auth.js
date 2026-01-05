@@ -178,17 +178,18 @@ app.http('me', {
             const headers = {};
             for (const [key, value] of request.headers.entries()) {
                 headers[key] = value;
-                if (key.toLowerCase() === 'authorization') {
+                // Use custom header X-Auth-Token to avoid Azure SWA intercepting Authorization header
+                if (key.toLowerCase() === 'x-auth-token') {
                     authHeader = value;
                 }
             }
             
             if (!authHeader) {
-                return { status: 401, jsonBody: { error: 'No Authorization header', headers } };
+                return { status: 401, jsonBody: { error: 'No X-Auth-Token header', headers } };
             }
             
-            // Extract token from "Bearer <token>"
-            const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
+            // Token comes directly (no Bearer prefix needed)
+            const token = authHeader;
             
             // Verify token directly
             const jwt = require('jsonwebtoken');

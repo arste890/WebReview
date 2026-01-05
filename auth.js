@@ -186,7 +186,8 @@ async function apiRequest(endpoint, options = {}) {
     };
     
     if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
+        // Use X-Auth-Token to avoid Azure Static Web Apps intercepting the Authorization header
+        headers['X-Auth-Token'] = authToken;
     }
     
     const response = await fetch(url, {
