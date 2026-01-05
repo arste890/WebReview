@@ -15,52 +15,68 @@ app.http('login', {
     route: 'auth/login',
     handler: async (request, context) => {
         try {
-            await db.initDatabase();
-            
             const body = await request.json();
             const { email, password } = body;
             
             if (!email || !password) {
-                return auth.errorResponse(400, 'Email and password are required');
+                return { status: 400, jsonBody: { error: 'Email and password are required' } };
             }
+            
+            // Test basic response first
+            context.log('Attempting login for:', email);
+            
+            // Initialize database
+            await db.initDatabase();
+            context.log('Database initialized');
             
             // Find user
             const user = await db.getUserByEmail(email);
+            context.log('User lookup result:', user ? 'found' : 'not found');
             
             if (!user) {
-                return auth.errorResponse(401, 'Invalid email or password');
+                return { status: 401, jsonBody: { error: 'Invalid email or password' } };
             }
             
             if (user.status !== 'active') {
-                return auth.errorResponse(403, 'Account is disabled');
+                return { status: 403, jsonBody: { error: 'Account is disabled' } };
             }
             
-            // Verify password
-            const isValid = await auth.verifyPassword(password, user.passwordHash);
+            // Verify password using bcrypt directly
+            const bcrypt = require('bcryptjs');
+            const isValid = await bcrypt.compare(password, user.passwordHash);
+            context.log('Password valid:', isValid);
             
             if (!isValid) {
-                return auth.errorResponse(401, 'Invalid email or password');
+                return { status: 401, jsonBody: { error: 'Invalid email or password' } };
             }
             
-            // Update last login
-            await db.updateUser(user.id, user.email, { lastLogin: new Date().toISOString() });
-            
-            // Generate token
-            const token = auth.generateToken(user);
+            // Generate token using jwt directly
+            const jwt = require('jsonwebtoken');
+            const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+            const token = jwt.sign({
+                userId: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role
+            }, JWT_SECRET, { expiresIn: '7d' });
             
             // Return user info (without password) and token
             const { passwordHash, ...safeUser } = user;
             
-            return auth.successResponse({
-                user: safeUser,
-                token
-            });
+            return {
+                status: 200,
+                jsonBody: {
+                    success: true,
+                    user: safeUser,
+                    token
+                }
+            };
             
         } catch (error) {
             context.error('Login error:', error.message, error.stack);
             return {
                 status: 500,
-                jsonBody: { error: 'Internal server error', details: error.message }
+                jsonBody: { error: 'Internal server error', details: error.message, stack: error.stack }
             };
         }
     }
