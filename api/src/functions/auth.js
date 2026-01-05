@@ -31,7 +31,7 @@ app.http('login', {
                 return auth.errorResponse(401, 'Invalid email or password');
             }
             
-            if (!user.isActive) {
+            if (user.status !== 'active') {
                 return auth.errorResponse(403, 'Account is disabled');
             }
             
