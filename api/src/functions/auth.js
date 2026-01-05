@@ -57,8 +57,11 @@ app.http('login', {
             });
             
         } catch (error) {
-            context.error('Login error:', error);
-            return auth.errorResponse(500, 'Internal server error');
+            context.error('Login error:', error.message, error.stack);
+            return {
+                status: 500,
+                jsonBody: { error: 'Internal server error', details: error.message }
+            };
         }
     }
 });
