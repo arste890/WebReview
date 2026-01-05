@@ -53,8 +53,6 @@ app.http('login', {
             // Generate token using jwt directly
             const jwt = require('jsonwebtoken');
             const JWT_SECRET = (process.env.JWT_SECRET || 'development-secret-change-me').trim();
-            context.log('JWT_SECRET first 8 chars:', JWT_SECRET.substring(0, 8));
-            context.log('JWT_SECRET length:', JWT_SECRET.length);
             const token = jwt.sign({
                 userId: user.id,
                 email: user.email,
@@ -70,9 +68,7 @@ app.http('login', {
                 jsonBody: {
                     success: true,
                     user: safeUser,
-                    token,
-                    debugSecretPrefix: JWT_SECRET.substring(0, 8),
-                    debugSecretLen: JWT_SECRET.length
+                    token
                 }
             };
             
@@ -80,7 +76,7 @@ app.http('login', {
             context.error('Login error:', error.message, error.stack);
             return {
                 status: 500,
-                jsonBody: { error: 'Internal server error', details: error.message, stack: error.stack }
+                jsonBody: { error: 'Internal server error' }
             };
         }
     }
@@ -173,35 +169,28 @@ app.http('me', {
     route: 'auth/me',
     handler: async (request, context) => {
         try {
-            // Debug: Check headers directly
-            let authHeader = null;
-            const headers = {};
+            // Get X-Auth-Token header (avoids Azure SWA intercepting Authorization header)
+            let authToken = null;
             for (const [key, value] of request.headers.entries()) {
-                headers[key] = value;
-                // Use custom header X-Auth-Token to avoid Azure SWA intercepting Authorization header
                 if (key.toLowerCase() === 'x-auth-token') {
-                    authHeader = value;
+                    authToken = value;
+                    break;
                 }
             }
             
-            if (!authHeader) {
-                return { status: 401, jsonBody: { error: 'No X-Auth-Token header', headers } };
+            if (!authToken) {
+                return { status: 401, jsonBody: { error: 'Authentication required' } };
             }
             
-            // Token comes directly (no Bearer prefix needed)
-            const token = authHeader;
-            
-            // Verify token directly
+            // Verify token
             const jwt = require('jsonwebtoken');
             const JWT_SECRET = (process.env.JWT_SECRET || 'development-secret-change-me').trim();
-            context.log('ME - JWT_SECRET first 8 chars:', JWT_SECRET.substring(0, 8));
-            context.log('ME - JWT_SECRET length:', JWT_SECRET.length);
             
             let userPayload;
             try {
-                userPayload = jwt.verify(token, JWT_SECRET);
+                userPayload = jwt.verify(authToken, JWT_SECRET);
             } catch (jwtError) {
-                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message, debugSecretPrefix: JWT_SECRET.substring(0, 8), debugSecretLen: JWT_SECRET.length, receivedTokenFirst50: token.substring(0, 50), receivedTokenLast30: token.substring(token.length - 30) } };
+                return { status: 401, jsonBody: { error: 'Invalid or expired token' } };
             }
             
             await db.initDatabase();
@@ -214,11 +203,11 @@ app.http('me', {
             
             const { passwordHash, ...safeUser } = user;
             
-            return { status: 200, jsonBody: { user: safeUser, debugSecretPrefix: JWT_SECRET.substring(0, 8) } };
+            return { status: 200, jsonBody: { user: safeUser } };
             
         } catch (error) {
             context.error('Get user error:', error);
-            return { status: 500, jsonBody: { error: 'Internal server error', details: error.message } };
+            return { status: 500, jsonBody: { error: 'Internal server error' } };
         }
     }
 });
