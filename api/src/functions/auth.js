@@ -200,7 +200,7 @@ app.http('me', {
             try {
                 userPayload = jwt.verify(token, JWT_SECRET);
             } catch (jwtError) {
-                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message, debugSecretPrefix: JWT_SECRET.substring(0, 8), debugSecretLen: JWT_SECRET.length } };
+                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message, debugSecretPrefix: JWT_SECRET.substring(0, 8), debugSecretLen: JWT_SECRET.length, receivedTokenFirst50: token.substring(0, 50), receivedTokenLast30: token.substring(token.length - 30) } };
             }
             
             await db.initDatabase();
