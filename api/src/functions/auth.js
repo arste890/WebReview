@@ -53,6 +53,7 @@ app.http('login', {
             // Generate token using jwt directly
             const jwt = require('jsonwebtoken');
             const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+            context.log('JWT_SECRET first 8 chars:', JWT_SECRET.substring(0, 8));
             const token = jwt.sign({
                 userId: user.id,
                 email: user.email,
@@ -68,7 +69,8 @@ app.http('login', {
                 jsonBody: {
                     success: true,
                     user: safeUser,
-                    token
+                    token,
+                    debugSecretPrefix: JWT_SECRET.substring(0, 8)
                 }
             };
             
@@ -189,12 +191,13 @@ app.http('me', {
             // Verify token directly
             const jwt = require('jsonwebtoken');
             const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+            context.log('ME - JWT_SECRET first 8 chars:', JWT_SECRET.substring(0, 8));
             
             let userPayload;
             try {
                 userPayload = jwt.verify(token, JWT_SECRET);
             } catch (jwtError) {
-                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message } };
+                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message, debugSecretPrefix: JWT_SECRET.substring(0, 8) } };
             }
             
             await db.initDatabase();
@@ -207,7 +210,7 @@ app.http('me', {
             
             const { passwordHash, ...safeUser } = user;
             
-            return { status: 200, jsonBody: { user: safeUser } };
+            return { status: 200, jsonBody: { user: safeUser, debugSecretPrefix: JWT_SECRET.substring(0, 8) } };
             
         } catch (error) {
             context.error('Get user error:', error);
