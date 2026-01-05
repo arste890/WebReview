@@ -169,10 +169,15 @@ app.http('me', {
     route: 'auth/me',
     handler: async (request, context) => {
         try {
+            // Debug: Log what we receive
+            context.log('Headers type:', typeof request.headers);
+            context.log('Headers:', JSON.stringify([...request.headers.entries()]));
+            
             const userPayload = auth.authenticateRequest(request);
+            context.log('User payload:', userPayload);
             
             if (!userPayload) {
-                return auth.errorResponse(401, 'Authentication required');
+                return { status: 401, jsonBody: { error: 'Authentication required', debug: 'No user payload from token' } };
             }
             
             await db.initDatabase();
@@ -180,16 +185,16 @@ app.http('me', {
             const user = await db.getUserById(userPayload.userId);
             
             if (!user) {
-                return auth.errorResponse(404, 'User not found');
+                return { status: 404, jsonBody: { error: 'User not found' } };
             }
             
             const { passwordHash, ...safeUser } = user;
             
-            return auth.successResponse({ user: safeUser });
+            return { status: 200, jsonBody: { user: safeUser } };
             
         } catch (error) {
             context.error('Get user error:', error);
-            return auth.errorResponse(500, 'Internal server error');
+            return { status: 500, jsonBody: { error: 'Internal server error', details: error.message } };
         }
     }
 });
