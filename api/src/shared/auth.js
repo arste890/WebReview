@@ -55,7 +55,19 @@ function verifyToken(token) {
  * Extract token from request headers
  */
 function extractToken(request) {
-    const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
+    // Azure Functions v4 uses request.headers which may be a Headers object or Map-like
+    let authHeader = null;
+    
+    if (request.headers) {
+        // Try different methods to get the header
+        if (typeof request.headers.get === 'function') {
+            authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
+        } else if (request.headers.authorization) {
+            authHeader = request.headers.authorization;
+        } else if (request.headers['authorization']) {
+            authHeader = request.headers['authorization'];
+        }
+    }
     
     if (!authHeader) {
         return null;
