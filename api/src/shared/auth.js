@@ -5,6 +5,7 @@
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -102,12 +103,7 @@ function hasRole(user, requiredRoles) {
  * Generate a secure random token for invitations
  */
 function generateInviteToken() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let token = '';
-    for (let i = 0; i < 64; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return token;
+    return crypto.randomBytes(32).toString('hex');
 }
 
 /**
@@ -120,7 +116,7 @@ function createResponse(statusCode, body, headers = {}) {
             'Content-Type': 'application/json',
             ...headers
         },
-        body: JSON.stringify(body)
+        jsonBody: body
     };
 }
 
