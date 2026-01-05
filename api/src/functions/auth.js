@@ -169,15 +169,32 @@ app.http('me', {
     route: 'auth/me',
     handler: async (request, context) => {
         try {
-            // Debug: Log what we receive
-            context.log('Headers type:', typeof request.headers);
-            context.log('Headers:', JSON.stringify([...request.headers.entries()]));
+            // Debug: Check headers directly
+            let authHeader = null;
+            const headers = {};
+            for (const [key, value] of request.headers.entries()) {
+                headers[key] = value;
+                if (key.toLowerCase() === 'authorization') {
+                    authHeader = value;
+                }
+            }
             
-            const userPayload = auth.authenticateRequest(request);
-            context.log('User payload:', userPayload);
+            if (!authHeader) {
+                return { status: 401, jsonBody: { error: 'No Authorization header', headers } };
+            }
             
-            if (!userPayload) {
-                return { status: 401, jsonBody: { error: 'Authentication required', debug: 'No user payload from token' } };
+            // Extract token from "Bearer <token>"
+            const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
+            
+            // Verify token directly
+            const jwt = require('jsonwebtoken');
+            const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+            
+            let userPayload;
+            try {
+                userPayload = jwt.verify(token, JWT_SECRET);
+            } catch (jwtError) {
+                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message } };
             }
             
             await db.initDatabase();
