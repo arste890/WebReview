@@ -52,8 +52,9 @@ app.http('login', {
             
             // Generate token using jwt directly
             const jwt = require('jsonwebtoken');
-            const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+            const JWT_SECRET = (process.env.JWT_SECRET || 'development-secret-change-me').trim();
             context.log('JWT_SECRET first 8 chars:', JWT_SECRET.substring(0, 8));
+            context.log('JWT_SECRET length:', JWT_SECRET.length);
             const token = jwt.sign({
                 userId: user.id,
                 email: user.email,
@@ -70,7 +71,8 @@ app.http('login', {
                     success: true,
                     user: safeUser,
                     token,
-                    debugSecretPrefix: JWT_SECRET.substring(0, 8)
+                    debugSecretPrefix: JWT_SECRET.substring(0, 8),
+                    debugSecretLen: JWT_SECRET.length
                 }
             };
             
@@ -190,14 +192,15 @@ app.http('me', {
             
             // Verify token directly
             const jwt = require('jsonwebtoken');
-            const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+            const JWT_SECRET = (process.env.JWT_SECRET || 'development-secret-change-me').trim();
             context.log('ME - JWT_SECRET first 8 chars:', JWT_SECRET.substring(0, 8));
+            context.log('ME - JWT_SECRET length:', JWT_SECRET.length);
             
             let userPayload;
             try {
                 userPayload = jwt.verify(token, JWT_SECRET);
             } catch (jwtError) {
-                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message, debugSecretPrefix: JWT_SECRET.substring(0, 8) } };
+                return { status: 401, jsonBody: { error: 'Invalid token', details: jwtError.message, debugSecretPrefix: JWT_SECRET.substring(0, 8), debugSecretLen: JWT_SECRET.length } };
             }
             
             await db.initDatabase();
