@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebReview | StevensIT Client Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <svg class="loader-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <p class="loader-text">Loading your projects...</p>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon-wrapper">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-name">Stevens<span class="accent">IT</span></span>
+                        <span class="logo-tagline">WebReview</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="projects">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Projects</span>
+                </button>
+                <button class="nav-item" data-view="feedback">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Feedback</span>
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+                <button class="nav-item" data-view="team" data-role="developer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>Team</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span>C</span>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">Client User</span>
+                        <span class="user-role">Reviewer</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="view active">
+                <header class="view-header">
+                    <div class="header-content">
+                        <h1>Welcome to WebReview</h1>
+                        <p class="subtitle">Review and provide feedback on your web projects</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="new-project-btn" data-role="developer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            New Project
+                        </button>
+                    </div>
+                </header>
+
+                <div class="dashboard-grid">
+                    <!-- Stats Cards -->
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="total-projects">0</span>
+                                <span class="stat-label">Total Projects</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon amber">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="pending-reviews">0</span>
+                                <span class="stat-label">Pending Reviews</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="approved-projects">0</span>
+                                <span class="stat-label">Approved</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="total-feedback">0</span>
+                                <span class="stat-label">Feedback Items</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Projects -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Recent Projects</h2>
+                            <button class="btn btn-ghost" data-view="projects">View All</button>
+                        </div>
+                        <div class="projects-grid" id="recent-projects">
+                            <!-- Projects will be dynamically inserted -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Feedback -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Recent Feedback</h2>
+                            <button class="btn btn-ghost" data-view="feedback">View All</button>
+                        </div>
+                        <div class="feedback-list" id="recent-feedback">
+                            <!-- Feedback will be dynamically inserted -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects View -->
+            <section id="projects-view" class="view">
+                <header class="view-header">
+                    <div class="header-content">
+                        <h1>Projects</h1>
+                        <p class="subtitle">Manage and review your web development projects</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <input type="text" placeholder="Search projects..." id="project-search">
+                        </div>
+                        <button class="btn btn-primary" id="new-project-btn-2" data-role="developer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            New Project
+                        </button>
+                    </div>
+                </header>
+
+                <div class="projects-container">
+                    <div class="projects-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="in-review">In Review</button>
+                        <button class="filter-btn" data-filter="approved">Approved</button>
+                    </div>
+                    <div class="projects-grid full" id="all-projects">
+                        <!-- Projects will be dynamically inserted -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feedback View -->
+            <section id="feedback-view" class="view">
+                <header class="view-header">
+                    <div class="header-content">
+                        <h1>Feedback</h1>
+                        <p class="subtitle">Track all feedback and comments across projects</p>
+                    </div>
+                </header>
+
+                <div class="feedback-container">
+                    <div class="feedback-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="open">Open</button>
+                        <button class="filter-btn" data-filter="resolved">Resolved</button>
+                    </div>
+                    <div class="feedback-list full" id="all-feedback">
+                        <!-- Feedback will be dynamically inserted -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settings-view" class="view">
+                <header class="view-header">
+                    <div class="header-content">
+                        <h1>Settings</h1>
+                        <p class="subtitle">Customize your WebReview experience</p>
+                    </div>
+                </header>
+
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3>Profile</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>Display Name</label>
+                                <input type="text" id="display-name" value="Client User">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="user-email" value="client@example.com">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Notifications</h3>
+                        <div class="settings-form">
+                            <div class="form-group toggle-group">
+                                <label>Email notifications for new feedback</label>
+                                <label class="toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="form-group toggle-group">
+                                <label>Email notifications for project updates</label>
+                                <label class="toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team Management View (Developer Only) -->
+            <section id="team-view" class="view" data-role="developer">
+                <header class="view-header">
+                    <div class="header-content">
+                        <h1>Team Management</h1>
+                        <p class="subtitle">Invite clients and manage team members</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="invite-user-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            Invite User
+                        </button>
+                    </div>
+                </header>
+
+                <div class="team-container">
+                    <!-- Pending Invitations -->
+                    <div class="team-section">
+                        <h3>Pending Invitations</h3>
+                        <div class="invitations-list" id="pending-invitations">
+                            <!-- Invitations will be dynamically inserted -->
+                        </div>
+                    </div>
+
+                    <!-- Team Members -->
+                    <div class="team-section">
+                        <h3>Team Members</h3>
+                        <div class="team-filters">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="developer">Developers</button>
+                            <button class="filter-btn" data-filter="client">Clients</button>
+                        </div>
+                        <div class="team-list" id="team-members">
+                            <!-- Team members will be dynamically inserted -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Preview View (hidden by default) -->
+            <section id="preview-view" class="view preview-view">
+                <header class="preview-header">
+                    <button class="btn btn-ghost back-btn" id="back-to-projects">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12 19 5 12 12 5"/>
+                        </svg>
+                        Back to Projects
+                    </button>
+                    <div class="preview-project-info">
+                        <h2 id="preview-project-name">Project Name</h2>
+                        <span class="preview-status" id="preview-project-status">Pending</span>
+                    </div>
+                    <div class="preview-actions">
+                        <div class="device-toggle">
+                            <button class="device-btn active" data-device="desktop">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                    <line x1="8" y1="21" x2="16" y2="21"/>
+                                    <line x1="12" y1="17" x2="12" y2="21"/>
+                                </svg>
+                            </button>
+                            <button class="device-btn" data-device="tablet">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="4" y="2" width="16" height="20" rx="2"/>
+                                    <line x1="12" y1="18" x2="12" y2="18"/>
+                                </svg>
+                            </button>
+                            <button class="device-btn" data-device="mobile">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                                    <line x1="12" y1="18" x2="12" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" id="toggle-feedback-panel">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            Feedback
+                        </button>
+                        <button class="btn btn-success" id="approve-project">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Approve
+                        </button>
+                    </div>
+                </header>
+
+                <div class="preview-container">
+                    <div class="iframe-wrapper" id="iframe-wrapper">
+                        <div class="iframe-loading">
+                            <div class="loader-ring small"></div>
+                            <span>Loading preview...</span>
+                        </div>
+                        <iframe id="website-preview" src="" frameborder="0"></iframe>
+                    </div>
+
+                    <!-- Feedback Panel -->
+                    <aside class="feedback-panel" id="feedback-panel">
+                        <div class="panel-header">
+                            <h3>Feedback & Comments</h3>
+                            <button class="close-panel" id="close-feedback-panel">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="panel-content">
+                            <div class="feedback-form">
+                                <div class="form-group">
+                                    <label>Feedback Type</label>
+                                    <select id="feedback-type">
+                                        <option value="general">General Comment</option>
+                                        <option value="bug">Bug Report</option>
+                                        <option value="change">Change Request</option>
+                                        <option value="approval">Approval Note</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <div class="priority-buttons">
+                                        <button class="priority-btn" data-priority="low">Low</button>
+                                        <button class="priority-btn active" data-priority="medium">Medium</button>
+                                        <button class="priority-btn" data-priority="high">High</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Your Feedback</label>
+                                    <textarea id="feedback-text" placeholder="Describe your feedback in detail..."></textarea>
+                                </div>
+                                <button class="btn btn-primary full-width" id="submit-feedback">
+                                    Submit Feedback
+                                </button>
+                            </div>
+
+                            <div class="feedback-history">
+                                <h4>Previous Feedback</h4>
+                                <div class="feedback-items" id="project-feedback-list">
+                                    <!-- Feedback items will be dynamically inserted -->
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- New Project Modal -->
+    <div class="modal" id="new-project-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Project</h2>
+                <button class="close-modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="project-name" placeholder="e.g., Corporate Website Redesign">
+                </div>
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="client-name" placeholder="e.g., Acme Corporation">
+                </div>
+                <div class="form-group">
+                    <label>Website URL</label>
+                    <input type="url" id="project-url" placeholder="https://example.com">
+                    <span class="form-hint">Enter the URL of the website to be reviewed</span>
+                </div>
+                <div class="form-group">
+                    <label>Project Description</label>
+                    <textarea id="project-description" placeholder="Brief description of the project..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail Image URL (optional)</label>
+                    <input type="url" id="project-thumbnail" placeholder="https://example.com/thumbnail.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Assign Clients (optional)</label>
+                    <select id="project-clients" multiple>
+                        <!-- Clients will be loaded dynamically -->
+                    </select>
+                    <span class="form-hint">Hold Ctrl/Cmd to select multiple clients</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="cancel-new-project">Cancel</button>
+                <button class="btn btn-primary" id="save-new-project">Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div class="modal" id="invite-user-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Invite User</h2>
+                <button class="close-modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="invite-email" placeholder="client@example.com">
+                    <span class="form-hint">An invitation link will be sent to this email</span>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="invite-role">
+                        <option value="client">Client (Reviewer)</option>
+                        <option value="developer">Developer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Assign to Projects (optional)</label>
+                    <select id="invite-projects" multiple>
+                        <!-- Projects will be loaded dynamically -->
+                    </select>
+                    <span class="form-hint">Select projects this user can access (clients only)</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="cancel-invite">Cancel</button>
+                <button class="btn btn-primary" id="send-invite">Send Invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+

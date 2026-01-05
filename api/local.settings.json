@@ -1,0 +1,20 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "COSMOS_CONNECTION_STRING": "YOUR_COSMOS_CONNECTION_STRING",
+    "COSMOS_DATABASE": "webreview",
+    "JWT_SECRET": "your-super-secret-jwt-key-change-in-production",
+    "JWT_EXPIRES_IN": "7d",
+    "SMTP_HOST": "smtp.office365.com",
+    "SMTP_PORT": "587",
+    "SMTP_USER": "noreply@stevensed.org",
+    "SMTP_PASS": "your-email-password",
+    "APP_URL": "http://localhost:8080"
+  },
+  "Host": {
+    "CORS": "*",
+    "CORSCredentials": false
+  }
+}
